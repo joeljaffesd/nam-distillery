@@ -1,0 +1,3 @@
+[submodule "NeuralAmpModelerReamping"]
+	path = NeuralAmpModelerReamping
+	url = https://github.com/EdwardPayne/NeuralAmpModelerReamping
