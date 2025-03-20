@@ -9,7 +9,7 @@ Quick 'n dirty tool for distilling [NAM](https://www.neuralampmodeler.com/) mode
 That easy!
 
 ## Config
-Currently configured to use [Edward Payne's](https://github.com/EdwardPayne) reamping CLI to distill arbitrary NAM models to the "[pico](https://github.com/GuitarML/Mercury/blob/main/training/README.md)" model definition designed by [GuitarML](https://github.com/EdwardPayne).
+Currently configured to use [Edward Payne's](https://github.com/EdwardPayne) reamping CLI to distill arbitrary NAM models to the "[pico](https://github.com/GuitarML/Mercury/blob/main/training/README.md)" model definition designed by [GuitarML](https://github.com/guitarml).
 
 You can provide your own model definition in `nam_full_configs/model.json`.
 
