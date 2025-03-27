@@ -1,6 +1,10 @@
 # nam-distillery
 Quick 'n dirty tool for distilling [NAM](https://www.neuralampmodeler.com/) models. 
 
+<div align=center>
+<img src=./media/nam-distillery.jpg>
+</div>
+
 ## Using:
 - Run `./init.sh`
 - Then `./build.sh`
