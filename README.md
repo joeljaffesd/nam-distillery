@@ -18,15 +18,8 @@ Make sure you're in a Python environment that has `neural-amp-modeler` installed
 That easy!
 
 ### Docker Build:
-- Run `./init.sh`
-- Then `docker build -t nam-distillery .`
-- Then 
-  ```
-  docker run -it --rm \           
-  -v $(pwd)/models:/app/models \
-  -v $(pwd)/output:/app/output \
-  nam-distillery
-  ```
+- Run `docker build -t nam-distillery .`
+- Then `docker run -it --rm nam-distillery `
 
 **Note**: If you have an NVIDIA GPU, add the `--gpus all` flag to the above `docker run` command.
 
