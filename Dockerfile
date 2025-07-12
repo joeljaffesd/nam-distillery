@@ -22,16 +22,14 @@ RUN apt-get update && apt-get install -y \
 # Create symbolic link for python
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
+# Clone project manually instead of COPY for better cross-platform compatibility
+RUN git clone --recursive https://github.com/joeljaffesd/nam-distillery
+
 # Set working directory
-WORKDIR /app
+WORKDIR /nam-distillery
 
 # Install NAM (Neural Amp Modeler) 
 RUN pip3 install neural-amp-modeler
-
-COPY . .
-
-# Init submodules
-RUN ./init.sh
 
 # Try to build libsndfile from the Dependencies if it exists
 RUN if [ -d "NeuralAmpModelerReamping/Dependencies/libsndfile" ]; then \
@@ -49,16 +47,24 @@ RUN if [ -d "NeuralAmpModelerReamping/Dependencies/libsndfile" ]; then \
 # Build the project
 RUN ./build.sh
 
-# Modify learn.json if GPU is not available
-RUN if ! command -v nvidia-smi >/dev/null 2>&1 || ! nvidia-smi >/dev/null 2>&1; then \
-        echo "No NVIDIA GPU detected, configuring NAM for CPU training..."; \
-        echo "Note: If running on Apple Silicon, you may want to manually configure for MPS acceleration"; \
-        sed -i.bak 's/"accelerator": "gpu"/"accelerator": "cpu"/' nam_full_config/learn.json && rm nam_full_config/learn.json.bak; \
-    else \
-        echo "NVIDIA GPU detected, keeping GPU configuration"; \
-    fi
+# Create a startup script that detects GPU at runtime
+RUN echo '#!/bin/bash\n\
+# Check GPU availability at runtime and configure accordingly\n\
+if ! command -v nvidia-smi >/dev/null 2>&1 || ! nvidia-smi >/dev/null 2>&1; then\n\
+    echo "No NVIDIA GPU detected, configuring NAM for CPU training..."\n\
+    echo "Note: If running on Apple Silicon, you may want to manually configure for MPS acceleration"\n\
+    sed -i.bak "s/\"accelerator\": \"gpu\"/\"accelerator\": \"cpu\"/" nam_full_config/learn.json && rm nam_full_config/learn.json.bak 2>/dev/null || true\n\
+else\n\
+    echo "NVIDIA GPU detected, ensuring GPU configuration"\n\
+    sed -i.bak "s/\"accelerator\": \"cpu\"/\"accelerator\": \"gpu\"/" nam_full_config/learn.json && rm nam_full_config/learn.json.bak 2>/dev/null || true\n\
+fi\n\
+\n\
+# Execute the original command\n\
+exec "$@"\n\
+' > /entrypoint.sh && chmod +x /entrypoint.sh
 
-# Set default command
+# Set entrypoint and default command
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]
 
 # Expose any ports if needed (uncomment when we add web interface)
